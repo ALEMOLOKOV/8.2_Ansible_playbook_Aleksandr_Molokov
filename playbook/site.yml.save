@@ -8,37 +8,6 @@
         name: clickhouse-server
         state: restarted
   tasks:
-    - name: Get url vector
-      ansible.builtin.get_url:
-        url: "https://packages.timber.io/vector/0.27.0/{{ vector_version }}.x86_64.rpm"
-        dest: "./{{ vector_version }}.rpm"
-        mode: 0755
-    - name: Creates directory /src/vector/
-      become: true
-      ansible.builtin.file:
-        path: /src/vector/
-        state: directory
-        owner: amolokov
-        group: amolokov
-        mode: 0755
-    - name: CP
-      become: true
-      ansible.builtin.copy:
-        src: "./{{ vector_version }}.rpm"
-        dest: /src/vector/{{ vector_version }}.rpm
-        mode: 0755
-        remote_src: yes
-    - name: Install vector
-      become: true
-      ansible.builtin.yum:
-        name:
-          - "{{ vector_version }}.rpm"
-    - name: Set environment vector
-      become: true
-      ansible.builtin.template:
-        src: template/vector.sh.j2
-        dest: /etc/profile.d/vector.sh
-        mode: 0755
     - block:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
@@ -65,5 +34,39 @@
       register: create_db
       failed_when: create_db.rc != 0 and create_db.rc !=82
       changed_when: create_db.rc == 0
-
-
+## VECTOR
+  
+    - name: Install vector tar
+      become: true
+      ansible.builtin.yum:
+        name: zip
+    - name: Get_url vector 
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/0.27.0/{{ vector_version }}.x86_64.rpm"
+        dest: "./{{ vector_version }}.rpm"
+        mode: 0755
+    - name: Creates directory /src/vector/
+      become: true
+      ansible.builtin.file:
+        path: /src/vector/
+        state: directory
+        owner: amolokov
+        group: amolokov
+        mode: 0755
+    - name: CP             
+      become: true
+      ansible.builtin.copy:
+        src: "./{{ vector_version }}.rpm"
+        dest: /src/vector/{{ vector_version }}.rpm
+        mode: 0755
+        remote_src: yes
+    - name: Install vector
+      become: true
+      ansible.builtin.yum:
+        name:
+          - vector-{{ clickhouse_version }}.rpm
+    - name: Set environment vector
+      become: true
+      ansible.builtin.template:
+        src: templates/vector.sh.j2
+        dest: /etc/profile.d/vector.sh
