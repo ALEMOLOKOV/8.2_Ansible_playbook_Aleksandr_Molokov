@@ -1,45 +1,58 @@
-## Развертывание Clickhouse и установка Vector  
+## Ansible deployment Clickhouse and Vector  
 
-# Что делает playbook
+# Description
 
-Плейбук разворачивает ClickHouse
+Playbook deploys ClickHouse
 
-Устанавливает Vector на указанном хосте
+Installs Vector on the specified host
 
 
-# 1. Требования к ОС
+# Requirements
 
-Запуск плейбка производился с виртуальной машины с ОС Ubunto 20.04
+Ansible >= 2.7
 
-Хост на котором происходило развертывание - виртуальная машина созданная на Yandex Cloud, ОС - Centoc 7
+OS on deploy host must be from RPM line
 
-# 2. Что необходимо для выполнения плейбука
+Connection to host is made via ssh
 
-Для запуска плейбука на ключевой машине необходимо установить Ansible версии 2.10 или выше
+# Variables
 
-Подготовить хост на который будет установлены ClickHouse и Vector 
+All variables which can be overridden are stored in group_vars/clickhouse/vars.yml file as well as in below.
 
-В моем примере ClickHouse и Vector устанавливаются на один и тот же хост
+Name	             -       Default Value	    -   Description
 
-# В файле /inventory/prod.yml необходимо 
+vector_version       -	     vector-0.27.0-1    -  	Latest version
 
-- указать IP адрес хоста для разворачивает ClickHouse и устанавливает Vector
+clickhouse_version   -       22.3.3.44	        -    Latest version
 
-  В моем примере это IP адрес виртуальной машины, созданной на Yandex Cloud, ОС - Centoc 7
+
+# Local Testing
+ 
+- you must indicate IP address and username host machine into /inventory/prod.yml 
+
+  Testing performed on Yandex Cloud VM, ОS - Centoc 7
   
-- указать имя пользователя, такое же как и при создании виртуальной машины на Yandex Cloud
+  Connection to VM organised via ssh
 
-  В моем примере этот параметр amolokov
+# Examples
 
-  В моем примере подключение происходит по SSH, для подключения к хосту необходимо сформировать ключевую пару
-  
-  
-# В файле group_vars\clickhouse
+---
+clickhouse:
 
-- можно отредактировать версии ClickHouse и Vector, которые будут установлены на указанный хост
+  hosts:
 
-# 3 Запуск playbook
+    clickhouse-01:
 
-- производиться из директории ~/playbook
+      ansible_host: 51.250.25.8
 
-- команда для запуска ansible-playbook - i inventory/prod.yml site.yml
+      ansible_ssh_user: amolokov
+vector:
+
+  hosts:
+
+    vector:
+
+      ansible_host: 51.250.25.8
+
+      ansible_ssh_user: amolokov
+
