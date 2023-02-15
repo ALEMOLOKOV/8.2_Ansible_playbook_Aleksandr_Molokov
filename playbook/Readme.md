@@ -6,6 +6,8 @@ Playbook deploys ClickHouse
 
 Installs Vector on the specified host
 
+Install Lighthouse on the specified host
+
 
 # Requirements
 
@@ -17,13 +19,19 @@ Connection to host is made via ssh
 
 # Variables
 
-All variables which can be overridden are stored in group_vars/clickhouse/vars.yml file as well as in below.
+All variables which can be overridden are stored in group_vars
+
+/clickhouse/vars.yml file as well as in below.
 
 Name	             -       Default Value	    -   Description
 
-vector_version       -	     vector-0.27.0-1    -  	Latest version
-
 clickhouse_version   -       22.3.3.44	        -    Latest version
+
+/vector/vars.yml file as well as in below
+
+Name                 -       Default Value          -   Description
+
+vector_version       -       vector-0.27.0-1    -       Latest version
 
 
 # Local Testing
@@ -38,21 +46,18 @@ clickhouse_version   -       22.3.3.44	        -    Latest version
 
 ---
 clickhouse:
-
   hosts:
-
-    clickhouse-01:
-
-      ansible_host: 51.250.25.8
-
+    clickhouse:
+      ansible_host: 51.250.72.71
       ansible_ssh_user: amolokov
 vector:
-
   hosts:
-
     vector:
-
-      ansible_host: 51.250.25.8
-
+      ansible_host: 51.250.84.243
+      ansible_ssh_user: amolokov
+lighthouse:
+  hosts:
+    lighthouse:
+      ansible_host: 51.250.81.185
       ansible_ssh_user: amolokov
 
